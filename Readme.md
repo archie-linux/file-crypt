@@ -50,9 +50,9 @@ A Python-based tool for securely encrypting and decrypting files using Fernet sy
 
 ## Usage
 
-The project includes two scripts: `file_encryption.py` for encryption and `file_decryption.py` for decryption. Both scripts support a variety of command-line flags to customize behavior. If no arguments are provided or the `-h/--help` flag is used, a help message is displayed.
+The project includes two scripts: `encrypt.py` for encryption and `decrypt.py` for decryption. Both scripts support a variety of command-line flags to customize behavior. If no arguments are provided or the `-h/--help` flag is used, a help message is displayed.
 
-### Encryption (`file_encryption.py`)
+### Encryption (`encrypt.py`)
 
 Encrypt files or directories using a key file or a password-derived key. Supports multiple files, compression, key rotation, and more.
 
@@ -74,31 +74,31 @@ Encrypt files or directories using a key file or a password-derived key. Support
 
 1. **Encrypt a Single File with a Key File**:
    ```bash
-   python file_encryption.py -i example.txt -o example.txt.encrypted -k secret.key --verbose
+   python encrypt.py -i example.txt -o example.txt.encrypted -k secret.key --verbose
    ```
    Generates or loads `secret.key`, encrypts `example.txt`, and saves the result to `example.txt.encrypted`.
 
 2. **Encrypt a File with a Password**:
    ```bash
-   python file_encryption.py -i example.txt -o example.txt.encrypted --password mysecurepassword --compress
+   python encrypt.py -i example.txt -o example.txt.encrypted --password mysecurepassword --compress
    ```
    Derives a key from the password, compresses the file, and encrypts it. Creates `salt.bin` for key derivation.
 
 3. **Encrypt Multiple Files**:
    ```bash
-   python file_encryption.py -i file1.txt file2.txt -o output_dir -k secret.key --backup
+   python encrypt.py -i file1.txt file2.txt -o output_dir -k secret.key --backup
    ```
    Encrypts `file1.txt` and `file2.txt`, saves results to `output_dir/file1.txt.encrypted` and `output_dir/file2.txt.encrypted`, and creates backups.
 
 4. **Encrypt a Directory**:
    ```bash
-   python file_encryption.py -i input_dir -o output_dir -k secret.key --force --verbose
+   python encrypt.py -i input_dir -o output_dir -k secret.key --force --verbose
    ```
    Encrypts all files in `input_dir`, preserving directory structure in `output_dir`.
 
 5. **Key Rotation**:
    ```bash
-   python file_encryption.py -i old.encrypted -o new.encrypted --rotate-key old_key.key --new-key new_key.key
+   python encrypt.py -i old.encrypted -o new.encrypted --rotate-key old_key.key --new-key new_key.key
    ```
    Decrypts `old.encrypted` with `old_key.key` and re-encrypts it with `new_key.key`.
 
@@ -115,15 +115,15 @@ Encrypt files or directories using a key file or a password-derived key. Support
    ```
    Run:
    ```bash
-   python file_encryption.py --config config.ini
+   python encrypt.py --config config.ini
    ```
 
 7. **Show Help**:
    ```bash
-   python file_encryption.py -h
+   python encrypt.py -h
    ```
 
-### Decryption (`file_decryption.py`)
+### Decryption (`decrypt.py`)
 
 Decrypt files or directories using the same key or password used for encryption. Supports hash verification, decompression, and more.
 
@@ -144,25 +144,25 @@ Decrypt files or directories using the same key or password used for encryption.
 
 1. **Decrypt a Single File with a Key File**:
    ```bash
-   python file_decryption.py -i example.txt.encrypted -o decrypted.txt -k secret.key --verbose
+   python decrypt.py -i example.txt.encrypted -o decrypted.txt -k secret.key --verbose
    ```
    Loads `secret.key`, decrypts `example.txt.encrypted`, and saves the result to `decrypted.txt`.
 
 2. **Decrypt a File with a Password**:
    ```bash
-   python file_decryption.py -i example.txt.encrypted -o decrypted.txt --password mysecurepassword --decompress --verify-hash
+   python decrypt.py -i example.txt.encrypted -o decrypted.txt --password mysecurepassword --decompress --verify-hash
    ```
    Derives the key from the password, decompresses, verifies the hash, and decrypts the file. Requires `salt.bin`.
 
 3. **Decrypt Multiple Files**:
    ```bash
-   python file_decryption.py -i file1.txt.encrypted file2.txt.encrypted -o output_dir -k secret.key --backup
+   python decrypt.py -i file1.txt.encrypted file2.txt.encrypted -o output_dir -k secret.key --backup
    ```
    Decrypts `file1.txt.encrypted` and `file2.txt.encrypted`, saves results to `output_dir/file1.txt` and `output_dir/file2.txt`, and creates backups.
 
 4. **Decrypt a Directory**:
    ```bash
-   python file_decryption.py -i output_dir -o decrypted_dir -k secret.key --force --verbose
+   python decrypt.py -i output_dir -o decrypted_dir -k secret.key --force --verbose
    ```
    Decrypts all `.encrypted` files in `output_dir`, preserving directory structure in `decrypted_dir`.
 
@@ -180,12 +180,12 @@ Decrypt files or directories using the same key or password used for encryption.
    ```
    Run:
    ```bash
-   python file_decryption.py --config config.ini
+   python decrypt.py --config config.ini
    ```
 
 6. **Show Help**:
    ```bash
-   python file_decryption.py -h
+   python decrypt.py -h
    ```
 
 ## Notes
