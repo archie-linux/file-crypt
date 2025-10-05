@@ -42,3 +42,7 @@ A Python-based tool for securely encrypting and decrypting files using Fernet sy
 - cat example_decrypted.txt
 
 ### Credits: Grok (Done in 5 mins)
+
+P.S. - This is the very first project in the AI-Assisted 5-Minute Projects series. I'm planning to do more of these for a change.
+
+**Note**: To be precise, the project actually got done in 3 minutes, double-checking and proofreading added the extra 2 minutes.
