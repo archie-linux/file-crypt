@@ -1,6 +1,6 @@
 # FileCrypt
 
-A Python-based tool for securely encrypting and decrypting files using Fernet symmetric encryption from the `cryptography` library. This project provides simple, secure, and efficient scripts for both encryption and decryption of files, with advanced features for flexibility and security. Additionally, a Flask-based API is provided for programmatic access to encryption, decryption, and key rotation functionalities.
+A Python-based tool for securely encrypting and decrypting files using Fernet symmetric encryption from the `cryptography` library. This project provides simple, secure, and efficient scripts for both encryption and decryption of files, with advanced features for flexibility and security. Additionally, a Flask-based User-Interface is provided for encryption, decryption, and key rotation functionalities.
 
 ## Features
 
@@ -175,6 +175,28 @@ The `app.py` script provides a RESTful API for encryption, decryption, and key r
 
 - python app.py
 
+**Screenshots**
+
+### Encrypt Files
+
+<img src="./screenshots/encrypt.png" alt="drawing" width="400"/>
+
+### Decrypt Files
+
+<img src="./screenshots/decrypt.png" alt="drawing" width="400"/>
+
+### Rotate Keys
+
+<img src="./screenshots/rotate.png" alt="drawing" width="400"/>
+
+
+### Summary
+
+<img src="./screenshots/summary1.png" alt="drawing" width="400"/>
+
+<img src="./screenshots/summary2.png" alt="drawing" width="400"/>
+
+
 #### Endpoints
 
 1. **POST /encrypt**
@@ -223,12 +245,6 @@ The `app.py` script provides a RESTful API for encryption, decryption, and key r
      curl -X POST -F "file=@output.encrypted" -F "old_key_file=@secret.key" -F "new_key_file=@new_secret.key" http://localhost:5000/rotate_key -o rotated.encrypted
      ```
 
-#### Notes
-
-- Files are saved with unique names to avoid conflicts.
-- The app supports both password-based and key-file-based encryption/decryption.
-- This Flask app provides a RESTful interface to the encryption/decryption functionality, leveraging the modularized utilities for reusability and maintainability.
-
 ## Notes
 
 - **Key Compatibility**: Use the same key file or password (with `salt.bin`) for encryption and decryption.
@@ -241,3 +257,4 @@ The `app.py` script provides a RESTful API for encryption, decryption, and key r
 - **API Deployment**: Ensure `crypto_tools` is installed for `app.py` to function.
 
 **Credits**: Developed with Grok's assistance. Even Grok is not immune to getting stuck in a repetitive loop. For example, I kept asking it to produce a README in Markdown; however, it only provided part of it in a snippet and the rest as formatted markdown. I then had to paste the entire text and prompt it to generate the equivalent Markdown so that I could copy and paste the entire text from a single snippet.
+
