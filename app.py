@@ -146,6 +146,7 @@ def api_encrypt():
     output_files = []
     verbose_output = []
     metadata = read_metadata()
+    operation_id = uuid.uuid4().hex
 
     # Handle directory upload
     try:
@@ -182,7 +183,11 @@ def api_encrypt():
             metadata.append({
                 'encrypted_file': relative_output_file,
                 'key_used': key_identifier,
-                'decrypted_file': None
+                'decrypted_file': None,
+                'operation_id': operation_id,
+                'encrypt_zip_path': None,
+                'decrypt_zip_path': None,
+                'rotate_zip_path': None
             })
             if verbose:
                 verbose_output.append(f"Encrypted {input_file} to {output_file}")
@@ -197,6 +202,11 @@ def api_encrypt():
         import shutil
         shutil.make_archive(zip_path.replace('.zip', ''), 'zip', output_dir)
         logger.debug(f"Created zip at {zip_path}")
+        # Update metadata with encrypt_zip_path
+        relative_zip_path = os.path.relpath(zip_path, app.config['UPLOAD_FOLDER'])
+        for entry in metadata:
+            if entry['operation_id'] == operation_id:
+                entry['encrypt_zip_path'] = relative_zip_path
     except Exception as e:
         logger.error(f"Zip creation failed: {str(e)}")
         return render_template('result.html', error=f"Zip creation failed: {str(e)}", status=500)
@@ -211,7 +221,7 @@ def api_encrypt():
     response = {
         'message': 'Encryption completed',
         'output_files': output_files,
-        'zip_path': os.path.join('encrypted_files', zip_filename),
+        'zip_path': relative_zip_path,
         'verbose_output': verbose_output
     }
     if generated_key_path:
@@ -242,6 +252,7 @@ def api_decrypt():
     output_files = []
     verbose_output = []
     input_files = []
+    operation_id = uuid.uuid4().hex
 
     # Handle selected files from dropdown
     if selected_files:
@@ -315,6 +326,8 @@ def api_decrypt():
             for entry in metadata:
                 if entry['encrypted_file'] == relative_input_file:
                     entry['decrypted_file'] = relative_output_file
+                    entry['operation_id'] = operation_id
+                    entry['decrypt_zip_path'] = None  # Will be updated after zip creation
                     break
             if verbose:
                 verbose_output.append(f"Decrypted {input_file} to {output_file}")
@@ -329,6 +342,11 @@ def api_decrypt():
         import shutil
         shutil.make_archive(zip_path.replace('.zip', ''), 'zip', output_dir)
         logger.debug(f"Created zip at {zip_path}")
+        # Update metadata with decrypt_zip_path
+        relative_zip_path = os.path.relpath(zip_path, app.config['UPLOAD_FOLDER'])
+        for entry in metadata:
+            if entry['operation_id'] == operation_id:
+                entry['decrypt_zip_path'] = relative_zip_path
     except Exception as e:
         logger.error(f"Zip creation failed: {str(e)}")
         return render_template('result.html', error=f"Zip creation failed: {str(e)}", status=500)
@@ -343,12 +361,13 @@ def api_decrypt():
     response = {
         'message': 'Decryption completed',
         'output_files': output_files,
-        'zip_path': os.path.join('decrypted_files', zip_filename),
+        'zip_path': relative_zip_path,
         'verbose_output': verbose_output
     }
     logger.debug(f"Response: {response}")
     return render_template('result.html', data=response, status=200)
 
+@app.route('/api/rotate_key', methods=['POST'])
 @app.route('/api/rotate_key', methods=['POST'])
 def api_rotate_key():
     logger.debug("Received request to /api/rotate_key")
@@ -371,6 +390,7 @@ def api_rotate_key():
     output_files = []
     verbose_output = []
     input_files = []
+    operation_id = uuid.uuid4().hex
 
     # Handle selected files from dropdown
     for selected_file in selected_files:
@@ -461,12 +481,18 @@ def api_rotate_key():
                     entry['encrypted_file'] = relative_output_file
                     entry['key_used'] = new_key_identifier
                     entry['decrypted_file'] = None
+                    entry['operation_id'] = operation_id
+                    entry['encrypt_zip_path'] = None  # Will be updated after zip creation
+                    entry['decrypt_zip_path'] = None  # Clear since file is re-encrypted
                     break
             else:
                 metadata.append({
                     'encrypted_file': relative_output_file,
                     'key_used': new_key_identifier,
-                    'decrypted_file': None
+                    'decrypted_file': None,
+                    'operation_id': operation_id,
+                    'encrypt_zip_path': None,
+                    'decrypt_zip_path': None
                 })
             if verbose:
                 verbose_output.append(f"Rotated key for {input_file} to {output_path}")
@@ -481,6 +507,11 @@ def api_rotate_key():
         import shutil
         shutil.make_archive(zip_path.replace('.zip', ''), 'zip', output_dir)
         logger.debug(f"Created zip at {zip_path}")
+        # Update metadata with encrypt_zip_path
+        relative_zip_path = os.path.relpath(zip_path, app.config['UPLOAD_FOLDER'])
+        for entry in metadata:
+            if entry['operation_id'] == operation_id:
+                entry['encrypt_zip_path'] = relative_zip_path
     except Exception as e:
         logger.error(f"Zip creation failed: {str(e)}")
         return render_template('result.html', error=f"Zip creation failed: {str(e)}", status=500)
@@ -495,7 +526,7 @@ def api_rotate_key():
     response = {
         'message': 'Key rotation completed',
         'output_files': output_files,
-        'zip_path': os.path.join('rotated_files', zip_filename),
+        'zip_path': relative_zip_path,
         'new_key_file': new_key_identifier,
         'verbose_output': verbose_output
     }

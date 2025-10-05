@@ -1,46 +1,57 @@
 {% extends "base.html" %}
 {% block title %}FileCrypt - Summary{% endblock %}
 {% block content %}
-<h2>File Summary</h2>
-{% if metadata and metadata|length %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Encrypted File</th>
-                <th>Key Used</th>
-                <th>Decrypted File</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for entry in metadata %}
-                <tr>
-                    <td>
-                        {% if entry.encrypted_file %}
-                            <a href="/download/{{ entry.encrypted_file }}">{{ entry.encrypted_file }}</a>
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if entry.key_used and entry.key_used != 'Password' %}
-                            <a href="/download/{{ entry.key_used }}">{{ entry.key_used }}</a>
-                        {% else %}
-                            {{ entry.key_used or 'N/A' }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if entry.decrypted_file %}
-                            <a href="/download/{{ entry.decrypted_file }}">{{ entry.decrypted_file }}</a>
-                        {% else %}
-                            Not decrypted
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p class="text-muted">No files have been processed yet.</p>
-{% endif %}
-<a href="/" class="btn btn-secondary">Back to Home</a>
+<h2>Summary</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Encrypted File</th>
+            <th>Key Used</th>
+            <th>Decrypted File</th>
+            <th>Encryption Zip</th>
+            <th>Decryption Zip</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in metadata %}
+        <tr>
+            <td>
+                {% if entry.encrypted_file %}
+                    <a href="/download/{{ entry.encrypted_file }}">{{ entry.encrypted_file }}</a>
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.key_used and entry.key_used != 'Password' %}
+                    <a href="/download/{{ entry.key_used }}">{{ entry.key_used }}</a>
+                {% else %}
+                    {{ entry.key_used or 'N/A' }}
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.decrypted_file %}
+                    <a href="/download/{{ entry.decrypted_file }}">{{ entry.decrypted_file }}</a>
+                {% else %}
+                    Not decrypted
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.encrypt_zip_path %}
+                    <a href="/download/{{ entry.encrypt_zip_path }}">{{ entry.encrypt_zip_path }}</a>
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.decrypt_zip_path %}
+                    <a href="/download/{{ entry.decrypt_zip_path }}">{{ entry.decrypt_zip_path }}</a>
+                {% else %}
+                    {{ 'Not Generated' if entry.decrypted_file else 'N/A' }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
