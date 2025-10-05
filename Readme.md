@@ -32,13 +32,13 @@ A Python-based tool for securely encrypting and decrypting files using Fernet sy
 
 4. **Encrypt File**
 
-- python file_encryption.py
+- python file_encryption.py -i example.txt -o enc.txt -k secret.key
 - cat secret.key
 - cat example.txt.encrypted
 
 5. **Decrypt File**
 
-- python file_decryption.py
+- python file_decryption.py -i enc.txt -o dec.txt -k secret.key
 - cat example_decrypted.txt
 
 ### Credits: Grok (Done in 5 mins)

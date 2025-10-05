@@ -1,6 +1,7 @@
-# file_encryption.py
 from cryptography.fernet import Fernet
 import os
+import sys
+import argparse
 
 def generate_key(key_file='secret.key'):
     """Generate a key and save it to a file."""
@@ -27,20 +28,37 @@ def encrypt_file(input_file, output_file, key):
     print(f"File encrypted successfully: {output_file}")
 
 def main():
-    """Main function to demonstrate encryption."""
-    # File paths
-    input_file = 'example.txt'
-    encrypted_file = 'example.txt.encrypted'
-    key_file = 'secret.key'
+    """Main function to handle encryption with command-line arguments."""
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Encrypt a file using Fernet encryption.")
+    parser.add_argument('-i', '--input', help="Input file to encrypt")
+    parser.add_argument('-o', '--output', help="Output encrypted file")
+    parser.add_argument('-k', '--key', help="Key file to store/load the encryption key")
 
-    # Create a sample file to encrypt
-    with open(input_file, 'w') as f:
-        f.write("This is a sample text file for encryption.")
+    # Parse arguments
+    args = parser.parse_args()
+
+    # Show help and exit if no arguments
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0)
+
+    input_file = args.input
+    encrypted_file = args.output
+    key_file = args.key
 
     try:
-        # Generate and save a key
-        key = generate_key(key_file)
-        print("Key generated and saved.")
+        # Generate and save a key if it doesn't exist
+        if not os.path.exists(key_file):
+            key = generate_key(key_file)
+            print(f"Key generated and saved to {key_file}")
+        else:
+            key = load_key(key_file)
+            print(f"Key loaded from {key_file}")
+
+        # Check if input file exists
+        if not os.path.exists(input_file):
+            raise FileNotFoundError(f"Input file {input_file} not found.")
 
         # Encrypt the file
         encrypt_file(input_file, encrypted_file, key)
