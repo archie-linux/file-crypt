@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}FileCrypt - Encrypt{% endblock %}
+{% block content %}
+<h2>Encrypt Files</h2>
+<form action="/api/encrypt" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="files" class="form-label">Select Files</label>
+        <input type="file" class="form-control" id="files" name="files[]" multiple>
+        <div class="invalid-feedback">Please select at least one file or a directory.</div>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password (Optional)</label>
+        <input type="password" class="form-control" id="password" name="password">
+        <div class="invalid-feedback">Provide either a password or a key file.</div>
+    </div>
+    <div class="mb-3">
+        <label for="key_file" class="form-label">Key File (Optional)</label>
+        <input type="file" class="form-control" id="key_file" name="key_file">
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="compress" name="compress" value="true">
+        <label class="form-check-label" for="compress">Compress Before Encryption</label>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="force" name="force" value="true">
+        <label class="form-check-label" for="force">Force Overwrite</label>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="backup" name="backup" value="true">
+        <label class="form-check-label" for="backup">Create Backup</label>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="verbose" name="verbose" value="true">
+        <label class="form-check-label" for="verbose">Verbose Output</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Encrypt</button>
+</form>
+{% endblock %}

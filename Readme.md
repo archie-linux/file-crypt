@@ -1,6 +1,6 @@
 # FileCrypt
 
-A Python-based tool for securely encrypting and decrypting files using Fernet symmetric encryption from the `cryptography` library. This project provides simple, secure, and efficient scripts for both encryption and decryption of files, with advanced features for flexibility and security.
+A Python-based tool for securely encrypting and decrypting files using Fernet symmetric encryption from the `cryptography` library. This project provides simple, secure, and efficient scripts for both encryption and decryption of files, with advanced features for flexibility and security. Additionally, a Flask-based API is provided for programmatic access to encryption, decryption, and key rotation functionalities.
 
 ## Features
 
@@ -17,47 +17,18 @@ A Python-based tool for securely encrypting and decrypting files using Fernet sy
 - Backup option to preserve input files.
 - Generates and manages encryption keys securely.
 - Robust error handling for file and key operations.
-
-## Prerequisites
-
-- Python 3.6 or higher
-- `cryptography` library
-- `tqdm` library (for progress bar)
-
-## Installation
-
-1. **Clone the Repository** (or download the project files):
-
-   ```bash
-   git clone https://github.com/yourusername/file-crypt.git
-   cd FileCrypt
-   ```
-
-2. **Create a Virtual Environment**:
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install Dependencies**:
-
-   Install the required libraries using pip:
-
-   ```bash
-   pip install cryptography tqdm
-   ```
+- Flask API for programmatic encryption/decryption.
 
 ## Usage
 
-The project includes two scripts: `encrypt.py` for encryption and `decrypt.py` for decryption. Both scripts support a variety of command-line flags to customize behavior. If no arguments are provided or the `-h/--help` flag is used, a help message is displayed.
+The project includes two command-line scripts (`encrypt.py` and `decrypt.py`) and a Flask API (`app.py`) for programmatic access. The scripts and API are in the `file-crypt` directory.
 
 ### Encryption (`encrypt.py`)
 
 Encrypt files or directories using a key file or a password-derived key. Supports multiple files, compression, key rotation, and more.
 
 **Command-Line Flags**:
-- `-i/--input`: Input conferencia file(s) or directory to encrypt (required, supports multiple paths).
+- `-i/--input`: Input file(s) or directory to encrypt (required, supports multiple paths).
 - `-o/--output`: Output file or directory for encrypted data (required).
 - `-k/--key`: Key file to store/load the encryption key (required unless `--password` is used).
 - `--password`: Password to derive the encryption key (ignores `--key` if provided).
@@ -188,16 +159,85 @@ Decrypt files or directories using the same key or password used for encryption.
    python decrypt.py -h
    ```
 
+### Flask API Usage (`app.py`)
+
+The `app.py` script provides a RESTful API for encryption, decryption, and key rotation, built on Flask and using the `crypto_tools` module. It resides in the `file-crypt` directory and requires the `crypto_tools` module to be installed as a package.
+
+#### How to Use the Flask App
+
+### Install Dependencies
+
+- python -m venv myvenv
+- source myven/bin/activate
+- pip install -r requirements.txt
+
+### Run Flask App
+
+- python app.py
+
+#### Endpoints
+
+1. **POST /encrypt**
+   - **Form Data**:
+     - `file`: The file to encrypt (required).
+     - `password`: Password for key derivation (optional).
+     - `key_file`: Key file for encryption (optional).
+     - `compress`: Boolean (`true`/`false`) to compress before encryption (default: `false`).
+     - `force`: Boolean to overwrite existing files (default: `false`).
+     - `backup`: Boolean to create backups (default: `false`).
+     - `verbose`: Boolean for verbose output (default: `false`).
+   - **Response**: Encrypted file (`.encrypted`) with hash file generated.
+   - **Example** (using `curl`):
+     ```bash
+     curl -X POST -F "file=@input.txt" -F "password=secret123" -F "compress=true" http://localhost:5000/encrypt -o output.encrypted
+     ```
+
+2. **POST /decrypt**
+   - **Form Data**:
+     - `file`: The encrypted file (required).
+     - `password`: Password for key derivation (optional).
+     - `key_file`: Key file for decryption (optional).
+     - `verify_hash`: Boolean to verify hash (default: `false`).
+     - `decompress`: Boolean to decompress after decryption (default: `false`).
+     - `force`: Boolean to overwrite existing files (default: `false`).
+     - `backup`: Boolean to create backups (default: `false`).
+     - `verbose`: Boolean for verbose output (default: `false`).
+   - **Response**: Decrypted file.
+   - **Example**:
+     ```bash
+     curl -X POST -F "file=@output.encrypted" -F "password=secret123" -F "decompress=true" http://localhost:5000/decrypt -o decrypted.txt
+     ```
+
+3. **POST /rotate_key**
+   - **Form Data**:
+     - `file`: The encrypted file (required).
+     - `old_key_file`: The old key file (required).
+     - `new_key_file`: The new key file (optional; generates new key if not provided).
+     - `compress`: Boolean to compress during re-encryption (default: `false`).
+     - `force`: Boolean to overwrite existing files (default: `false`).
+     - `backup`: Boolean to create backups (default: `false`).
+     - `verbose`: Boolean for verbose output (default: `false`).
+   - **Response**: File re-encrypted with the new key.
+   - **Example**:
+     ```bash
+     curl -X POST -F "file=@output.encrypted" -F "old_key_file=@secret.key" -F "new_key_file=@new_secret.key" http://localhost:5000/rotate_key -o rotated.encrypted
+     ```
+
+#### Notes
+
+- Files are saved with unique names to avoid conflicts.
+- The app supports both password-based and key-file-based encryption/decryption.
+- This Flask app provides a RESTful interface to the encryption/decryption functionality, leveraging the modularized utilities for reusability and maintainability.
+
 ## Notes
 
 - **Key Compatibility**: Use the same key file or password (with `salt.bin`) for encryption and decryption.
 - **Compression**: If a file was encrypted with `--compress`, use `--decompress` during decryption.
 - **Hash Verification**: Requires the `.hash` file generated during encryption. Use `--verify-hash` to enable.
-- **Configuration File**: Supports all flags except `--password`, `--rotate-key`, and `--new-key` for security.
+- **Configuration File**: Supported by CLI scripts; the Flask API does not currently use config files but can be extended.
 - **Backups**: Created with `.bak` extension in the same directory as the input file.
-- **Progress Bar**: Automatically displayed for large files using `tqdm`.
-- **Directory Processing**: Preserves directory structure; encryption appends `.encrypted`, decryption removes it.
+- **Progress Bar**: Automatically displayed for large files in CLI using `tqdm`; not visible in API responses.
+- **Directory Processing**: CLI preserves directory structure; API processes single files only.
+- **API Deployment**: Ensure `crypto_tools` is installed for `app.py` to function.
 
 **Credits**: Developed with Grok's assistance. Even Grok is not immune to getting stuck in a repetitive loop. For example, I kept asking it to produce a README in Markdown; however, it only provided part of it in a snippet and the rest as formatted markdown. I then had to paste the entire text and prompt it to generate the equivalent Markdown so that I could copy and paste the entire text from a single snippet.
-
-**Note**: The very first commit was implemented in 3 minutes; double-checking and proofreading added the extra 2 minutes. The entire project took around 20 minutes.

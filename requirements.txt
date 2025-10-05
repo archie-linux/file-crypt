@@ -1,0 +1,6 @@
+cryptography
+tqdm
+configparser
+flask>=2.0.0
+werkzeug>=2.0.0
+filelock

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}FileCrypt - Decrypt{% endblock %}
+{% block content %}
+<h2>Decrypt Files</h2>
+<form action="/api/decrypt" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="encrypted_files" class="form-label">Select Encrypted Files</label>
+        <select class="form-control" id="encrypted_files" name="encrypted_files" multiple size="5">
+            {% for entry in encrypted_files %}
+                <option value="{{ entry.encrypted_file }}">
+                    {{ entry.encrypted_file }} (Key: {{ entry.key_used }})
+                </option>
+            {% endfor %}
+        </select>
+        <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple files.</small>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password (for password-encrypted files)</label>
+        <input type="password" class="form-control" id="password" name="password">
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="verify_hash" name="verify_hash" value="true">
+        <label class="form-check-label" for="verify_hash">Verify Hash</label>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="decompress" name="decompress" value="true">
+        <label class="form-check-label" for="decompress">Decompress After Decryption</label>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="force" name="force" value="true">
+        <label class="form-check-label" for="force">Force Overwrite</label>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="backup" name="backup" value="true">
+        <label class="form-check-label" for="backup">Create Backup</label>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="verbose" name="verbose" value="true">
+        <label class="form-check-label" for="verbose">Verbose Output</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Decrypt</button>
+</form>
+{% endblock %}

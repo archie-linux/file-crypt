@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}FileCrypt - Result{% endblock %}
+{% block content %}
+<h2>Operation Result</h2>
+{% if error %}
+    <div class="alert alert-danger">
+        <h4>Error (Status: {{ status }})</h4>
+        <p>{{ error }}</p>
+        <a href="{{ request.referrer or '/' }}" class="btn btn-secondary">Go Back</a>
+    </div>
+{% else %}
+    <div class="alert alert-success">
+        <h4>{{ data.message }}</h4>
+        {% if data.verbose_output and data.verbose_output|length %}
+            <h5>Details:</h5>
+            <ul>
+                {% for line in data.verbose_output %}
+                    <li>{{ line }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if data.zip_path %}
+            <p><a href="/download/{{ data.zip_path }}" class="btn btn-success">Download Results</a></p>
+        {% elif data.output_file %}
+            <p><a href="/download/{{ data.output_file }}" class="btn btn-success">Download Rotated File</a></p>
+            {% if data.new_key_file %}
+                <p><a href="/download/{{ data.new_key_file }}" class="btn btn-secondary">Download New Key</a></p>
+            {% endif %}
+        {% endif %}
+        {% if data.generated_key_path %}
+            <p><a href="/download/{{ data.generated_key_path }}" class="btn btn-secondary">Download Generated Key</a></p>
+        {% endif %}
+        <a href="{{ request.referrer or '/' }}" class="btn btn-secondary">Go Back</a>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}FileCrypt - Home{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2 text-center">
+        <h1>Welcome to FileCrypt</h1>
+        <p class="lead">Securely encrypt and decrypt your files with ease. Use our web interface to manage file encryption, decryption, and key rotation.</p>
+        <div class="mt-4">
+            <a href="/encrypt" class="btn btn-primary btn-lg me-2">Encrypt Files</a>
+            <a href="/decrypt" class="btn btn-secondary btn-lg me-2">Decrypt Files</a>
+            <a href="/rotate_key" class="btn btn-success btn-lg">Rotate Key</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
